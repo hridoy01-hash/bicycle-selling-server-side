@@ -25,6 +25,7 @@ async function run(){
         await client.connect();
         const database = client.db('bicycleStore')
         const productsCollection = database.collection('products');
+        const ordersCollection = database.collection('orders');
         console.log('Database Connected Successfully');
 
         //GET API(products)
@@ -41,7 +42,31 @@ async function run(){
             const result = await productsCollection.findOne(query);
             res.json(result);
 
-        })
+        });
+
+        //POST API (order collecion)
+        app.post('/orders',async(req,res)=>{
+            const order = req.body
+            const result = await ordersCollection.insertOne(order);
+            console.log(result);
+            res.json(result);
+        });
+
+         //FIND ORDER BY EMAIL
+         app.get('/orders/:email', async (req, res) => {
+            const email = req.params.email;
+            console.log(email);
+            const result = await ordersCollection.find({ email : email }).toArray();
+            console.log(result);
+            res.json(result);
+        });
+
+         //FIND ALL ORDER 
+         app.get("/orders", async (req, res) => {
+            const cursor = ordersCollection.find({})
+            const result = await cursor.toArray(cursor);
+            res.json(result);
+        });
   
 
     }
