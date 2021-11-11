@@ -26,6 +26,7 @@ async function run(){
         const database = client.db('bicycleStore')
         const productsCollection = database.collection('products');
         const ordersCollection = database.collection('orders');
+        const usersCollection = database.collection('user')
         console.log('Database Connected Successfully');
 
         //GET API(products)
@@ -48,16 +49,13 @@ async function run(){
         app.post('/orders',async(req,res)=>{
             const order = req.body
             const result = await ordersCollection.insertOne(order);
-            console.log(result);
             res.json(result);
         });
 
          //FIND ORDER BY EMAIL
          app.get('/orders/:email', async (req, res) => {
             const email = req.params.email;
-            console.log(email);
             const result = await ordersCollection.find({ email : email }).toArray();
-            console.log(result);
             res.json(result);
         });
 
@@ -67,6 +65,44 @@ async function run(){
             const result = await cursor.toArray(cursor);
             res.json(result);
         });
+
+        //POST API (store customer info)
+        app.post('/users',async(req,res)=>{
+            const user = req.body;
+            const result = await usersCollection.insertOne(user);     
+        });
+
+        //PUT APi(googlesign user email upsert)
+        app.put('/users',async(req,res)=>{
+            const user = req.body;
+            const filter = {email : user.email}
+            const options = {upsert:true};
+            const updateDoc = {$set:user}
+            const result = usersCollection.updateOne(filter,updateDoc,options);
+            console.log(result);
+            res.json(result);
+        });
+
+        //GET API (for check admin or not)
+        app.get('/users/:email',async(req,res)=>{
+            const email = req.params.email;
+            const query = {email : email}
+            const user = await usersCollection.findOne(query)
+            let isAdmin = false;
+            if(user?.role === 'admin'){
+                isAdmin= true;
+            }
+            res.send({admin : isAdmin});
+        })
+
+        //PUT API (make admin)
+        app.put('/users/admin',async(req,res)=>{
+            const user = req.body;
+            const filter = {email:user.email}
+            const updateDoc = {$set:{role:'admin'}}
+            const result = await usersCollection.updateOne(filter,updateDoc)
+            res.json(result);
+        })
   
 
     }
