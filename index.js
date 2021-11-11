@@ -69,8 +69,17 @@ async function run(){
         //POST API (store customer info)
         app.post('/users',async(req,res)=>{
             const user = req.body;
-            const result = await usersCollection.insertOne(user);     
+            const result = await usersCollection.insertOne(user); 
+            res.json(result);    
         });
+
+        //POST API(for add a new product)
+        app.post('/products',async(req,res)=>{
+            const product = req.body;
+            const result = await productsCollection.insertOne(product);
+            console.log(result);
+            res.json(result);
+        })
 
         //PUT APi(googlesign user email upsert)
         app.put('/users',async(req,res)=>{
@@ -102,6 +111,31 @@ async function run(){
             const updateDoc = {$set:{role:'admin'}}
             const result = await usersCollection.updateOne(filter,updateDoc)
             res.json(result);
+        });
+
+        //DELETE API (product/order delete)
+        app.delete('/orders/:id',async(req,res)=>{
+            const id = req.params;
+            const query = {_id:ObjectId(id)}
+            const result = await ordersCollection.deleteOne(query);
+            res.json(result);
+
+        });
+
+        //UPDATE API (order staus)
+        app.put('/orders/:id',async(req,res)=>{
+            const id = req.params;
+            const query = {_id:ObjectId(id)}
+            const updateDoc = {
+                $set: {
+                    status: `Shipped`
+                },
+              };
+            const result = await ordersCollection.updateOne(query,updateDoc);
+            console.log(result);
+            res.json(result) ;
+
+            
         })
   
 
