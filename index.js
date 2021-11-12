@@ -117,7 +117,7 @@ async function run(){
                 isAdmin= true;
             }
             res.send({admin : isAdmin});
-        })
+        });
 
         //PUT API (make admin)
         app.put('/users/admin',async(req,res)=>{
@@ -160,7 +160,7 @@ async function run(){
             res.json(result) ;
 
             
-        })
+        });
   
 
     }
