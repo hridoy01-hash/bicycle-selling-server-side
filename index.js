@@ -27,7 +27,7 @@ async function run(){
         const productsCollection = database.collection('products');
         const ordersCollection = database.collection('orders');
         const usersCollection = database.collection('user');
-        const reviewCollection = database.collection('review');
+        const reviewCollection = database.collection('reviews');
         console.log('Database Connected Successfully');
 
         //GET API(products)
@@ -54,14 +54,14 @@ async function run(){
         });
 
         //POST API (review collecion)
-        app.post('/review',async(req,res)=>{
+        app.post('/reviews',async(req,res)=>{
             const review = req.body;
             const result = await reviewCollection.insertOne(review);
             res.json(result);
         });
 
         //GET API(review collecion)
-        app.get('/review',async(req,res)=>{
+        app.get('/reviews',async(req,res)=>{
             const cursor = reviewCollection.find({});
             const result = await cursor.toArray();
             res.json(result);
