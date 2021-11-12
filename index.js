@@ -26,7 +26,8 @@ async function run(){
         const database = client.db('bicycleStore')
         const productsCollection = database.collection('products');
         const ordersCollection = database.collection('orders');
-        const usersCollection = database.collection('user')
+        const usersCollection = database.collection('user');
+        const reviewCollection = database.collection('review');
         console.log('Database Connected Successfully');
 
         //GET API(products)
@@ -51,6 +52,20 @@ async function run(){
             const result = await ordersCollection.insertOne(order);
             res.json(result);
         });
+
+        //POST API (review collecion)
+        app.post('/review',async(req,res)=>{
+            const review = req.body;
+            const result = await reviewCollection.insertOne(review);
+            res.json(result);
+        });
+
+        //GET API(review collecion)
+        app.get('/review',async(req,res)=>{
+            const cursor = reviewCollection.find({});
+            const result = await cursor.toArray();
+            res.json(result);
+        })
 
          //FIND ORDER BY EMAIL
          app.get('/orders/:email', async (req, res) => {
@@ -113,11 +128,20 @@ async function run(){
             res.json(result);
         });
 
-        //DELETE API (product/order delete)
+        //DELETE API (order delete)
         app.delete('/orders/:id',async(req,res)=>{
             const id = req.params;
             const query = {_id:ObjectId(id)}
             const result = await ordersCollection.deleteOne(query);
+            res.json(result);
+
+        });
+
+        //DELETE API(product delete)
+        app.delete('/products/:id',async(req,res)=>{
+            const id = req.params;
+            const query = {_id:ObjectId(id)}
+            const result = await productsCollection.deleteOne(query);
             res.json(result);
 
         });
